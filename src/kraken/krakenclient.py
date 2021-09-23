@@ -8,27 +8,28 @@ import time
 import base64
 import hashlib
 import hmac
+from src.base.platformclient import PlatformClient
 # TODO: Remove assert, only Exceptions
 
 
 
-class KrakenClient():
+class KrakenClient(PlatformClient):
     def __init__(self, api_private_key=None, api_public_key=None):
         self.api_private_key=api_private_key
         self.api_public_key=api_public_key
         
-    def get_last_info_and_preproces(self, pair_name: str, interval: int):
+    def get_last_historical_data(self, pair_name: str, interval: int):
         """TODO: add description"""
         
         if interval not in [1, 5, 15, 30, 60, 240, 1440, 10080, 21600]:
             raise ValueError("Interval is not supported")
-        data = self.get_historical_data_from_crypto(pair_name=pair_name, interval=interval)
+        data = self._get_historical_data_from_crypto(pair_name=pair_name, interval=interval)
         df = self.from_dict_to_df(data=data)
-        df = self.fix_columns_type(df)
-        df = self.set_datetime_as_index(df)
+        #df = self.fix_columns_type(df)
+        #df = self.set_datetime_as_index(df)
         return df
     
-    def get_historical_data_from_crypto(self, pair_name: str, interval: int):
+    def _get_historical_data_from_crypto(self, pair_name: str, interval: int):
         """TODO: add description"""
         output=self.krakenapi_func(
             ["","OHLC", f"pair={pair_name.lower()}", f"interval={interval}"],
@@ -52,12 +53,6 @@ class KrakenClient():
         df = df.astype(float).copy()
         df[["time", "count"]] = df[["time", "count"]].astype(int).copy()
         return df
-    def set_datetime_as_index(self, df: pd.DataFrame):
-        """TODO: add description"""
-        df["date"] = pd.to_datetime(df['time'], unit='s')
-        df = df.set_index(pd.DatetimeIndex(df["date"])).copy()
-        return df
-
         
         
     def execute_order(self, order_type, volume, pair_name):
