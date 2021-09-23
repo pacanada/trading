@@ -5,17 +5,16 @@ import pandas as pd
 
 class DataDownloader:
     """Class for downloading from platform of platform client"""
-    def __init__(self, pair_names: List[str], directory: Path, platform_client: PlatformClient, interval: int):
+    def __init__(self, pair_names: List[str], directory: Path, platform_client: PlatformClient):
         self.pair_names = pair_names
         self.directory = directory
         self.platform_client = platform_client
-        self.interval = interval
 
-    def download_data(self):
+    def download_data(self, interval: int = 1):
         """TODO: check why we need so many steps with dates, i do not remember"""
         for pair_name in self.pair_names:
             df = self._init_dataframe(pair_name=pair_name)
-            df_temp = self.platform_client.get_last_historical_data(pair_name=pair_name, interval=self.interval)
+            df_temp = self.platform_client.get_last_historical_data(pair_name=pair_name, interval=interval)
             df_temp = self._set_datetime_as_index(df_temp)
             df = pd.concat([df, df_temp])
             df = df.drop(["date"], axis=1)

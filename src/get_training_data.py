@@ -7,8 +7,8 @@ from datetime import datetime
 def main(pair_names, directory, platform_client, interval, sleep_time):
     try:
         while True:
-            dd = DataDownloader(pair_names, directory, platform_client, interval)
-            dd.download_data()
+            dd = DataDownloader(pair_names, directory, platform_client)
+            dd.download_data(interval=interval)
             print(f"Updated in timestamp {datetime.now()}")
             time.sleep(sleep_time)
     except KeyboardInterrupt:
