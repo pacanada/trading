@@ -12,7 +12,3 @@ class Strategy(ABC):
     @abstractmethod
     def decide():
         pass
-
-class DummyStrategy(Strategy):
-    def decide():
-        pass

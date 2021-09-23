@@ -1,4 +1,5 @@
 # trading
 
-# Steps
-- [ ] Save training data (class)
+# Todo
+- [x] Save training data (class)
+- [ ] Class for trading bot with diferent strategies
