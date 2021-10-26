@@ -6,3 +6,4 @@ wandb/
 notebooks/wandb/
 .DS_Store
 data/training/*.csv
+data/training/*.feather
