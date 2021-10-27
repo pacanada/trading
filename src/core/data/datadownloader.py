@@ -11,7 +11,7 @@ class DataDownloader:
         self.platform_client = platform_client
 
     def download_data(self, interval: int = 1):
-        """TODO: check why we need so many steps with dates, i do not remember"""
+        """TODO: check why we need so many steps with dates, I do not remember"""
         for pair_name in self.pair_names:
             df = self._init_dataframe(pair_name=pair_name)
             df_temp = self.platform_client.get_last_historical_data(pair_name=pair_name, interval=interval)
