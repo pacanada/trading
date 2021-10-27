@@ -16,3 +16,4 @@ def add_training_type(df, split_size, n_splits):
     # Just in case
     df.loc[df.index>(df.shape[0]-split_size),"type"]="validation_unseen"
     return df
+
