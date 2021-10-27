@@ -1,7 +1,7 @@
 import gdown
 import os
+from pathlib import Path
 from sklearn.preprocessing import StandardScaler, FunctionTransformer
-import matplotlib.pyplot as plt
 import numpy as np
 import wandb
 import pandas as pd
@@ -61,10 +61,12 @@ class Trainer:
                 self.score_training.append(self.model.score(self.training_data[features],self.training_data[target]))
                 self.score_test.append(self.model.score(self.test_data[features],self.test_data[target]))
                 self.score_validation.append(self.model.score(self.validation_data[features],self.validation_data[target]))
+                training_info_dict = self.get_training_info_dict(it=it)
+                self.wandb_logger.log(training_info_dict)
             if it%print_every==0:
                 training_info_dict = self.get_training_info_dict(it=it)
                 print(training_info_dict)
-                self.wandb_logger.log(training_info_dict)
+                #self.wandb_logger.log(training_info_dict)
 
             if (self.score_validation[-1:][0] > threshold_val) | (epochs==(it+1)):
                 training_info_dict = self.get_training_info_dict(it=it)
@@ -100,19 +102,26 @@ if __name__=="__main__":
     file, folder = "training_all_crypto.feather", "temp/"
     project_name = "run5"
     entity_name = "pab_lo4"
-    load_previous_model = False
-    load_model_config = {"entity": "pab_lo4", "project": "run4", "model_name": "NeuralNetwork", "model_version": "v18", "model_format": ".pickle"}    
+    load_previous_model = True
+    load_model_config = {"entity": "pab_lo4", "project": "run5", "model_name": "NeuralNetwork", "model_version": "v16", "model_format": ".pickle"}    
     download_training_data("15VkzDb8sfWTDOl44ODmkNS20KEszWUb-", folder, file)
     df_training, df_test, df_validation = load_data(folder, file)
     columns_features = [col for col in df_training.columns if col.startswith("feature_domain")]
     columns_target = [col for col in df_training.columns if col.startswith("target")]
     columns_target = ["target_5_multiplied"]
 
-    hidden_layer_sizes_list = [(10,10), (15,15), (20,20), (10,10,10)]
+    hidden_layer_sizes_list = [(15,15), (20,20), (10,10,10)]
 
     if load_previous_model:
         pipe = load_model_from_artifact(**load_model_config)
         print("loaded model: ", pipe)
+        try:
+            wandb_logger = WandbLogger(project_name="re_run", entity_name=entity_name, model_params=pipe[2].get_params())
+        except:   
+            wandb_logger = WandbLogger(project_name="re_run", entity_name=entity_name, model_params=pipe[2].get_params())
+        trainer = Trainer(pipe, df_training, df_test, df_validation, wandb_logger)
+
+        trainer.init_training(2000, columns_features, columns_target, 5, 20)
     else:
         for hidden_layer_sizes in hidden_layer_sizes_list:
             nn = MLPRegressor(
@@ -127,10 +136,10 @@ if __name__=="__main__":
                             ("to_float16",FunctionTransformer(np.float16)),
                             ("nn", nn)]
                         )
-    try:
-        wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
-    except:   
-        wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
-    trainer = Trainer(pipe, df_training, df_test, df_validation, wandb_logger)
+            try:
+                wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
+            except:   
+                wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
+            trainer = Trainer(pipe, df_training, df_test, df_validation, wandb_logger)
 
-    trainer.init_training(500, columns_features, columns_target, 5, 20)
+            trainer.init_training(2000, columns_features, columns_target, 5, 20)
