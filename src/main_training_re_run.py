@@ -11,13 +11,13 @@ def load_data(input_folder, input_name):
 
 if __name__=="__main__":
     file, folder = "training_all_crypto.feather", "temp/"
-    project_name = "run5"
+    project_name = "re_run_divine_snowflake"
     entity_name = "pab_lo4"
     load_model_config = {
         "entity": "pab_lo4",
-        "project": "run5",
+        "project": "run5_grid_search",
         "model_name": "NeuralNetwork",
-        "model_version": "v16",
+        "model_version": "v130",
         "model_format": ".pickle"
         }    
     download_training_data("15VkzDb8sfWTDOl44ODmkNS20KEszWUb-", folder, file)
@@ -30,9 +30,9 @@ if __name__=="__main__":
     pipe = load_model_from_artifact(**load_model_config)
     print("loaded model: ", pipe)
     try:
-        wandb_logger = WandbLogger(project_name="re_run", entity_name=entity_name, model_params=pipe[2].get_params())
+        wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
     except:   
-        wandb_logger = WandbLogger(project_name="re_run", entity_name=entity_name, model_params=pipe[2].get_params())
+        wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
     trainer = Trainer(pipe, df_training, df_test, df_validation, wandb_logger)
 
     trainer.init_training(2000, columns_features, columns_target, 5, 20)
