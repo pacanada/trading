@@ -20,14 +20,14 @@ if __name__=="__main__":
    
     #download_training_data("15VkzDb8sfWTDOl44ODmkNS20KEszWUb-", folder, file)
     df_training, df_test, df_validation = load_data(folder, file)
-    df_training = df_training.sample(10000, random_state=1).copy()
+    df_training = df_training.sample(100000, random_state=1).copy()
     columns_features = [col for col in df_training.columns if col.startswith("feature_domain")]
     columns_target = [col for col in df_training.columns if col.startswith("target")]
     columns_target = ["target_5_multiplied"]
 
     hidden_layer_sizes_list = [(15,15), (50,50)]
-    learning_rates = [0.1, 0.01, 0.001, 0.0001]
-    alphas = [0.001,0.0001]
+    learning_rates = [0.01, 0.001, 0.0001]
+    alphas = [0.0001, 0.00001]
 
     list_params = [(hidden_layer_sizes, learning_rate, alpha) for hidden_layer_sizes in hidden_layer_sizes_list for learning_rate in learning_rates for alpha in alphas]
 
@@ -39,6 +39,7 @@ if __name__=="__main__":
         nn = MLPRegressor(
             hidden_layer_sizes=hidden_layer_sizes,
             learning_rate_init=learning_rate,
+            learning_rate="adaptive",
             warm_start=True,
             random_state=1,
             max_iter=5,
@@ -56,4 +57,4 @@ if __name__=="__main__":
             wandb_logger = WandbLogger(project_name=project_name, entity_name=entity_name, model_params=pipe[2].get_params())
         trainer = Trainer(pipe, df_training, df_test, df_validation, wandb_logger)
 
-        trainer.init_training(100, columns_features, columns_target, 2, 20)
+        trainer.init_training(1000, columns_features, columns_target, 5, 20)
