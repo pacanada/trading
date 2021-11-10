@@ -67,14 +67,15 @@ def add_target(df, column_to_apply):
 
 
 
-def feature_pipeline(df):
+def feature_pipeline(df, include_target=True):
     column_to_apply="open"
     #df = pd.read_csv(get_project_root() / "data" / "historical" / f"{pair_name}.csv")
     df = normalize(df, column_to_normalize=column_to_apply)
     df, list_feature_recipe = generate_features(df)
     df = fill_na(df)
     df = to_float32(df)
-    df = add_target(df, column_to_apply)
+    if include_target:
+        df = add_target(df, column_to_apply)
     df = add_domain_features(df, column_to_apply)
     #df_validation=df.iloc[int(df.shape[0]*0.8):].dropna().copy()
     #df = df.iloc[0:int(df.shape[0]*0.8)].copy()
