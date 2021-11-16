@@ -54,20 +54,18 @@ def to_float32(df):
     df[feature_columns] = df[feature_columns].astype("float32")
     return df
 
-def add_target(df, column_to_apply):
-    df["target_1"] = df[column_to_apply].pct_change(-1)
-    df["target_2"] = df[column_to_apply].pct_change(-2)
-    df["target_5"] = df[column_to_apply].pct_change(-5)
-    df["target_10"] = df[column_to_apply].pct_change(-10)
-    df["target_20"] = df[column_to_apply].pct_change(-20)
-    df["target_50"] = df[column_to_apply].pct_change(-50)
-    df["target_80"] = df[column_to_apply].pct_change(-80)
-    df["target_100"] = df[column_to_apply].pct_change(-100)
+def add_target(df, column_to_apply, target_list=None):
+    if target_list is None:
+        targets = [1,2,5,10,20,50,80,100]
+    else:
+        targets = target_list
+    for target in targets:
+        df[f"target_{target}"] = df[column_to_apply].pct_change(-target)
     return df
 
 
 
-def feature_pipeline(df, include_target=True):
+def feature_pipeline(df, include_target=True, target_list=None):
     column_to_apply="open"
     #df = pd.read_csv(get_project_root() / "data" / "historical" / f"{pair_name}.csv")
     df = normalize(df, column_to_normalize=column_to_apply)
@@ -75,7 +73,7 @@ def feature_pipeline(df, include_target=True):
     df = fill_na(df)
     df = to_float32(df)
     if include_target:
-        df = add_target(df, column_to_apply)
+        df = add_target(df, column_to_apply, target_list)
     df = add_domain_features(df, column_to_apply)
     #df_validation=df.iloc[int(df.shape[0]*0.8):].dropna().copy()
     #df = df.iloc[0:int(df.shape[0]*0.8)].copy()

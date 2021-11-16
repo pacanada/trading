@@ -7,13 +7,13 @@ def get_split_indexes(split_size, n_splits, total_size):
     list_indexes = [val for lst in index_list for val in lst]
     return list_indexes
 
-def add_training_type(df, split_size, n_splits):
+def add_training_type(df, split_size, n_splits, val_size):
     """Adding type of training data to a dataframe"""
     
     list_indexes = get_split_indexes(split_size, n_splits, df.shape[0])
     df["type"] = "training"
     df.loc[np.array(list_indexes), "type"] = "validation"
     # Just in case
-    df.loc[df.index>(df.shape[0]-split_size),"type"]="validation_unseen"
+    df.loc[df.index>(df.shape[0]-val_size),"type"]="validation_unseen"
     return df
 
