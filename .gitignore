@@ -7,4 +7,5 @@ notebooks/wandb/
 .DS_Store
 data/training/*.csv
 data/training/*.feather
+data/test_model/*.csv
 .venv/

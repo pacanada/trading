@@ -16,7 +16,7 @@ def main(pair_names, directory, platform_client, interval, sleep_time):
 
 if __name__=="__main__":
     pair_names = ["xlmeur", "bcheur","compeur","xdgeur", "etheur", "algoeur", "bateur", "adaeur","xrpeur"]
-    directory = get_project_root() / "data" / "historical"
+    directory = get_project_root() / "data" / "test_model"
     platform_client = KrakenClient()
     interval = 1
     sleep_time = 1*60*60
