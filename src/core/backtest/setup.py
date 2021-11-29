@@ -11,8 +11,7 @@ ext_modules = [
     Extension(
         name="backtesting_cpp",
         sources=["backtesting_cpp.pyx"],
-        extra_compile_args=["-Wno-cpp", "-Wno-unused-function", "-O2", "-march=native", '-stdlib=libc++', '-std=c++11'],
-        extra_link_args=["-O2", "-march=native", '-stdlib=libc++'],
+        extra_compile_args=["-Wno-cpp", "-Wno-unused-function", "-O3", "-march=native", '-stdlib=libc++', '-std=c++11'],
         language="c++",
         include_dirs=[".", numpy.get_include()],
     )
