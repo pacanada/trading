@@ -1,7 +1,6 @@
 import pandas as pd
 import json
 import time
-import pickle
 import sys
 import platform
 import time
@@ -125,6 +124,20 @@ class KrakenClient(PlatformClient):
             sysargs=[
                         "",
                         "ClosedOrders",
+            ],
+            api_private_key=self.api_private_key,
+            api_public_key=self.api_public_key
+            )
+        output = eval(output.replace("null", "None"))
+        return output
+
+    def get_closed_order_from_start(self, start_id, end_id):
+        output=self.krakenapi_func(
+            sysargs=[
+                        "",
+                        "ClosedOrders",
+                        f"start={start_id}",
+                        f"end={end_id}",
             ],
             api_private_key=self.api_private_key,
             api_public_key=self.api_public_key
