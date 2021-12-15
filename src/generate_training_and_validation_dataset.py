@@ -18,7 +18,7 @@ def save_as_feather(pair_names):
         df_aux = pd.read_csv(get_project_root() / "data" / "training" / f"{pair}_training.csv", parse_dates=["date"])
         df_aux["pair_name"] = pair
         df = pd.concat([df, df_aux])
-    df.reset_index().to_feather(get_project_root() / "data" / "training" / "training_all_crypto_28_11_2021.feather")
+    df.reset_index().to_feather(get_project_root() / "data" / "training" / "training_all_crypto_14_12_2021.feather")
     print("Saved to feather")
 
 if __name__=="__main__":
