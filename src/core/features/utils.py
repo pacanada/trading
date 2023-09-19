@@ -55,6 +55,7 @@ def to_float32(df):
     return df
 
 def add_target(df, column_to_apply, target_list=None):
+    """Will result in -float when price goes up in n-'target' minutes"""
     if target_list is None:
         targets = [1,2,5,10,20,50,80,100]
     else:
