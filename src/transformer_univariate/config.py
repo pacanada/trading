@@ -13,10 +13,10 @@ class Config:
     n_head=5
     learning_rate=0.0005
     dropout=0.1
-    load_model = True
-    run_name = "transformer_v1"
+    load_model = False
+    run_name = "transformer_v2"
     path_model = str(get_project_root() / f"src/transformer_univariate/models/{run_name}/")
-    num_target = "target_5"
+    num_target = "target_20"
     features = ["open"]
     target = f"label_{num_target}"
     training_ratio = 0.9
