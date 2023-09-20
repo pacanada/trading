@@ -6,7 +6,7 @@ class Config:
     block_size = 50
     n_blocks = 5
     epochs = int(1e3)
-    vocab_size = 7 # same as number of classes
+    vocab_size = 6 # same as number of classes
     embedding_dim = 5 # must be equal to head_size in this model but not in example
     batch_size=258
     evaluation_steps=20

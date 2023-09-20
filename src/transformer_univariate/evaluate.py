@@ -11,8 +11,10 @@ m = Transformer(config)
 m.load_state_dict(torch.load(Path(config.path_model) / "weights.pt"))
 
 # loade test data
-X_test = torch.load(get_project_root() /"src" / "transformer_univariate" / "data"  / "X_test_all.pt")[:20000]
-y_test = torch.load(get_project_root() /"src" / "transformer_univariate" / "data" / "y_test_all.pt")[:20000]
+X_test = torch.load(get_project_root() /"src" / "transformer_univariate" / "data"  / "X_test_all.pt")[:30000]
+y_test = torch.load(get_project_root() /"src" / "transformer_univariate" / "data" / "y_test_all.pt")[:30000]
+
+print(pd.DataFrame(y_test.view(-1).detach().numpy()).value_counts())
 
 print(X_test.shape)
 
