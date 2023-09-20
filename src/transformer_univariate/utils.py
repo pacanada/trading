@@ -10,7 +10,7 @@ def create_sequences(t:np.array, block_size:int, dtype=torch.float32):
     for i in range(n-block_size+1):
         X_all[i] = t[i:i+block_size]
         
-    return torch.tensor(X_all, dtype=torch.float16)
+    return torch.tensor(X_all, dtype=dtype)
 
 
 

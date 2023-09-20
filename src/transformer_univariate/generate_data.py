@@ -20,8 +20,8 @@ def main():
     df[config.target] = pd.cut(df[config.num_target], bins=bins, labels=labels).astype(int)
 
     # Generate sequences normalized by the mean and std of the set defined by the pair_name and the sequence length (block_size)
-    X_train_all = torch.empty((0, config.block_size, len(config.features)), dtype=torch.float16)
-    X_test_all = torch.empty((0, config.block_size, len(config.features)), dtype=torch.float16)
+    X_train_all = torch.empty((0, config.block_size, len(config.features)), dtype=torch.float32)
+    X_test_all = torch.empty((0, config.block_size, len(config.features)), dtype=torch.float32)
 
     y_train_all = torch.empty((0, config.block_size), dtype=torch.uint8)
     y_test_all = torch.empty((0, config.block_size), dtype=torch.uint8)
@@ -35,7 +35,7 @@ def main():
 
 
         length = len(X)
-        idx_train = int(length*config.training_ratio)
+        idx_train = int(length*config.training_ratio)   
         X_train, y_train = X[:idx_train], y[:idx_train]
         X_test, y_test = X[idx_train:], y[idx_train:]
         X_train_all = torch.cat((X_train_all, X_train), dim=0)
