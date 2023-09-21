@@ -3,23 +3,24 @@ from src.modules.paths import get_project_root
 from dataclasses import dataclass
 
 class Config:
-    block_size = 50
+    block_size = 200
     n_blocks = 5
     epochs = int(1e3)
     vocab_size = 6 # same as number of classes
-    embedding_dim = 5 # must be equal to head_size in this model but not in example
+    embedding_dim = 10 # must be equal to head_size in this model but not in example
     batch_size=258
     evaluation_steps=20
     n_head=5
     learning_rate=0.0005
     dropout=0.1
     load_model = False
-    run_name = "transformer_v2"
+    run_name = "transformer_v4"
     path_model = str(get_project_root() / f"src/transformer_univariate/models/{run_name}/")
     num_target = "target_20"
     features = ["open"]
     target = f"label_{num_target}"
     training_ratio = 0.9
+    bins_label = [-0.012927892170363052, -0.0048195501696362275, 0.0, 0.004946431814054853, 0.013178091286970997]
 
     def __post_init__(self):
         if self.embedding_dim%self.n_head!=0:

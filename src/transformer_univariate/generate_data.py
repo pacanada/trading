@@ -10,7 +10,9 @@ def main():
 
     # Add classification target
     bins_no_inf = df[config.num_target].quantile([0.025, 0.15, 0.5 , 0.85, 0.975]).to_list()
-    # [-0.006509775145447816, -0.002259122887203158, 0.0, 0.0023185157608664464, 0.006562980687062181]
+    print(bins_no_inf)
+    # with [0.025, 0.15, 0.5 , 0.85, 0.975]
+    # [-0.012927892170363052, -0.0048195501696362275, 0.0, 0.004946431814054853, 0.013178091286970997]
     # print("min", df[config.num_target].min())
     # print("max", df[config.num_target].max())
     # print(bins_no_inf)

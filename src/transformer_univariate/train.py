@@ -48,6 +48,7 @@ for i in range(config.epochs):
             loss_val_l.append(loss_val)
             m.train()
             print("i:", i, "Loss train", loss_training, "Loss val", loss_val)
+            torch.save(m.state_dict(), Path(config.path_model) / "weights.pt")
 
 # save model
 torch.save(m.state_dict(), Path(config.path_model) / "weights.pt")

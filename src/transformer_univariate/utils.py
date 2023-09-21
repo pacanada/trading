@@ -25,5 +25,7 @@ def create_sequences_target(t:np.array, block_size:int):
 def standardize(data):
     means = data.mean(dim=1, keepdim=True)
     stds = data.std(dim=1, keepdim=True)
+    # if stds has 0 values, replace them with 1
+    stds[stds==0] = 1
     normalized_data = (data - means) / stds
     return normalized_data
