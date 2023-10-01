@@ -36,23 +36,34 @@ for pair_name in pairs:
     # Load model
 
     m = Transformer(config)
-    m.load_state_dict(torch.load(Path(config.path_model) / "weights.pt"))
+    # load weights from gpu
+
+    idx = 0
+
+    m.load_state_dict(torch.load(Path(config.path_model) / "weights.pt", map_location=torch.device("cpu")))
 
     # Evaluate model
     m.eval()
     out = m(X.squeeze())
     loss_fn = nn.CrossEntropyLoss()
     loss_all = loss_fn(out.view(-1,config.vocab_size),y.view(-1))
-    loss_last = loss_fn(out[:,-1,:], y[:,-1])
+    loss_last = loss_fn(out[:,idx,:], y[:,idx])
     print(f"{pair_name}:Loss all ", loss_all.item(), "Loss last", loss_last.item())
 
-    predicted_class = out[:,-1,:].softmax(-1).argmax(1).detach().numpy()
-    target = y[:,-1].detach().numpy()
+    predicted_class = out[:,idx,:].softmax(-1).argmax(1).detach().numpy()
+    target = y[:,idx].detach().numpy()
+
+    predicted_all = out.view(-1, config.vocab_size).softmax(-1).argmax(1).detach().numpy()
+    target_all = y.view(-1).detach().numpy()
     print("Accuracy", (predicted_class==target).mean())
     print("Predicted class")
     print(pd.DataFrame(predicted_class).value_counts().to_dict())
     print("Target")
     print(pd.DataFrame(target).value_counts().to_dict())
+    print("Predicted class all")
+    print(pd.DataFrame(predicted_all).value_counts().to_dict())
+    print("Target all")
+    print(pd.DataFrame(target_all).value_counts().to_dict())
 
     # is around 1.3 a good loss for unbalance 6 classes?
 

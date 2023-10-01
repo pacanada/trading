@@ -11,3 +11,4 @@ data/test_model/*.csv
 .venv/
 API_Private_Key
 API_Public_Key
+data/kaggle_dataset/*

@@ -3,9 +3,9 @@ from src.modules.paths import get_project_root
 from dataclasses import dataclass
 
 class Config:
-    block_size = 200
+    block_size = 100
     n_blocks = 5
-    epochs = int(1e3)
+    epochs = int(2e3)
     vocab_size = 6 # same as number of classes
     embedding_dim = 10 # must be equal to head_size in this model but not in example
     batch_size=258
@@ -13,8 +13,8 @@ class Config:
     n_head=5
     learning_rate=0.0005
     dropout=0.1
-    load_model = False
-    run_name = "transformer_v4"
+    load_model = True
+    run_name = "kaggle"
     path_model = str(get_project_root() / f"src/transformer_univariate/models/{run_name}/")
     num_target = "target_20"
     features = ["open"]

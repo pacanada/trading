@@ -24,6 +24,27 @@ class Head(nn.Module):
         y = att @ v 
         return y
     
+class TokenHead(nn.Module):
+    def __init__(self, in_emebdding, out_embedding, config) -> None:
+        super().__init__()
+        self.key = nn.Linear(in_emebdding, out_embedding, bias=False)
+        self.query = nn.Linear(in_emebdding, out_embedding, bias=False)
+        self.value = nn.Linear(in_emebdding, out_embedding, bias=False)
+        self.register_buffer("tril", torch.tril(torch.ones(config.block_size, config.block_size)))
+        self.dropout = nn.Dropout(config.dropout)
+    def forward(self, x):
+        B,T,C = x.shape
+        k = self.key(x)
+        q = self.query(x)
+        v = self.value(x)
+        att = (q @ k.transpose(-2, -1)) *  C**-0.5
+        att = att.masked_fill(self.tril[:T,:T] == 0, float('-inf'))
+        att = torch.functional.F.softmax(att, dim=-1)
+        att =self.dropout(att)
+        #att = self.attn_dropout(att)
+        y = att @ v 
+        return y
+    
 class LayerNorm(nn.Module):
     """ LayerNorm but with an optional bias. PyTorch doesn't support simply bias=False """
 
@@ -72,16 +93,16 @@ class Transformer(nn.Module):
     def __init__(self, config) -> None:
         super().__init__()
         self.config=config
-        self.token_embedding = nn.Linear(config.block_size, config.embedding_dim*config.block_size, bias=False)
+        self.token_embedding = TokenHead(in_emebdding=1, out_embedding=config.embedding_dim, config=config)
         self.positional_encoding = nn.Embedding(num_embeddings=config.block_size, embedding_dim=config.embedding_dim)
         self.blocks = nn.Sequential(*[Block(config) for _ in range(config.n_blocks)],
             LayerNorm(ndim=config.embedding_dim),
         )
         self.lm_head = nn.Linear(config.embedding_dim, config.vocab_size, bias=False)
     def forward(self, x):
-        #TODO: Add conv or just linear?
-        x = self.token_embedding(x).view(-1,self.config.block_size, self.config.embedding_dim) + self.positional_encoding(torch.arange(self.config.block_size, device=x.device))
-        #x = x+ self.positional_encoding(torch.arange(self.config.block_size, device=x.device))
+        #TODO: Add conv or just linear?Is this data leakage? looks like it
+        #x = self.token_embedding(x).view(-1,self.config.block_size, self.config.embedding_dim) + self.positional_encoding(torch.arange(self.config.block_size, device=x.device))
+        x = self.token_embedding(x.view(-1,self.config.block_size,1))+ self.positional_encoding(torch.arange(self.config.block_size, device=x.device))
 
         x = self.blocks(x)
         x = self.lm_head(x)

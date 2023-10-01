@@ -1,12 +1,31 @@
 import pandas as pd
+from src.core.features.utils import add_target
 from src.modules.paths import get_project_root
 import numpy as np
 import torch
 from src.transformer_univariate.config import config
 from src.transformer_univariate.utils import create_sequences, create_sequences_target, standardize
+import os
+
+KAGGLE_DATASET = True
 
 def main():
-    df = pd.read_feather(get_project_root() / "data" / "training" / "training_all_crypto_14_12_2021.feather")
+    if KAGGLE_DATASET:
+        df = pd.DataFrame()
+        for file in list(os.walk(get_project_root() / "data" / "kaggle_dataset/1min/"))[0][2]:
+            df_aux = pd.read_parquet(get_project_root() / "data" / "kaggle_dataset/1min" / file).reset_index()
+            df_aux["pair_name"] = file.split(".")[0].lower()
+            df_aux = add_target(df_aux, column_to_apply="open", target_list=[20])
+            df = pd.concat([df, df_aux[["open_time", "open", "pair_name", "target_20"]]])
+        df = df.rename(columns={"open_time": "date"})
+        df = df.dropna()
+
+        df.to_parquet(get_project_root() / "data" / "kaggle_dataset" / "kaggle_dataset.parquet")
+           
+            
+
+    else:
+        df = pd.read_feather(get_project_root() / "data" / "training" / "training_all_crypto_14_12_2021.feather")
 
     # Add classification target
     bins_no_inf = df[config.num_target].quantile([0.025, 0.15, 0.5 , 0.85, 0.975]).to_list()
@@ -44,12 +63,16 @@ def main():
         y_train_all = torch.cat((y_train_all, y_train), dim=0)
         X_test_all = torch.cat((X_test_all, X_test), dim=0)
         y_test_all = torch.cat((y_test_all, y_test), dim=0)
+    if KAGGLE_DATASET:
+        directory = get_project_root() / "src" / "transformer_univariate" / "data" / "kaggle"
+    else:
+        directory = get_project_root() / "src" / "transformer_univariate" / "data" 
 
     # Serialize all variables to pytorch
-    torch.save(X_train_all, get_project_root() /"src" / "transformer_univariate" / "data"  / "X_train_all.pt")
-    torch.save(y_train_all, get_project_root() /"src" / "transformer_univariate" / "data" / "y_train_all.pt")
-    torch.save(X_test_all, get_project_root() /"src" / "transformer_univariate" / "data"  / "X_test_all.pt")
-    torch.save(y_test_all, get_project_root() /"src" / "transformer_univariate" / "data" / "y_test_all.pt")
+    torch.save(X_train_all, directory / "X_train_all.pt")
+    torch.save(y_train_all, directory / "y_train_all.pt")
+    torch.save(X_test_all, directory / "X_test_all.pt")
+    torch.save(y_test_all, directory / "y_test_all.pt")
 
 
 
